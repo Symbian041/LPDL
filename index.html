@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan Penggunaan Dana - PT Sandai Kemakmuran Utama</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- html2pdf.js CDN & html2canvas CDN for Direct Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Print Styles for Single Page A4 */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 8mm 10mm 8mm 10mm;
+      }
+      body * {
+        visibility: hidden;
+      }
+      #print-area, #print-area * {
+        visibility: visible;
+      }
+      #print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    /* Print Document A4 Layout Styling */
+    .a4-document {
+      width: 100%;
+      max-width: 794px; /* A4 width standard in px */
+      margin: 0 auto;
+      background: white;
+      box-sizing: border-box;
+      font-size: 11px;
+      line-height: 1.3;
+      color: #000;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 pb-12">
+
+  <!-- TOP NAVBAR -->
+  <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="bg-amber-500 text-slate-900 p-2 rounded-lg font-bold text-lg">
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-base leading-tight">PT SANDAI KEMAKMURAN UTAMA</h1>
+          <p class="text-xs text-slate-400">Sistem Laporan Penggunaan Dana</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="https://docs.google.com/spreadsheets/d/1IA692b6sU8GrgXqyZYE4wRf11pXb_e7GMLgxQdh_cpo/edit" target="_blank" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 shadow transition">
+          <i class="fa-solid fa-file-excel text-white"></i> Buka Google Sheet
+        </a>
+        <div class="text-xs bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 text-slate-300 hidden md:flex items-center">
+          <i class="fa-solid fa-location-dot text-amber-400 mr-1"></i> Site Labai / Kantor Operasional
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 no-print space-y-6">
+
+    <!-- STATS DASHBOARD -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center space-x-4">
+        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-xl font-bold">
+          <i class="fa-solid fa-folder-open"></i>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Laporan</p>
+          <h3 class="text-2xl font-bold text-slate-800" id="stat-total-laporan">0</h3>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center space-x-4">
+        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-xl font-bold">
+          <i class="fa-solid fa-money-bill-wave"></i>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Pengeluaran Dana</p>
+          <h3 class="text-xl font-bold text-slate-800" id="stat-total-dana">Rp 0</h3>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center text-xl font-bold">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div>
+            <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Database Online</p>
+            <h3 class="text-xs font-semibold text-emerald-600 mt-1 flex items-center gap-1">
+              <i class="fa-solid fa-link"></i> Terhubung Google Sheets
+            </h3>
+          </div>
+        </div>
+        <a href="https://docs.google.com/spreadsheets/d/1IA692b6sU8GrgXqyZYE4wRf11pXb_e7GMLgxQdh_cpo/edit" target="_blank" title="Buka Spreadsheet di Tab Baru" class="text-xs bg-slate-100 hover:bg-emerald-50 text-emerald-700 border border-emerald-300 px-3 py-2 rounded-lg font-medium transition flex items-center gap-1">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka
+        </a>
+      </div>
+    </div>
+
+    <!-- FORM INPUT SECTION -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="bg-slate-800 px-6 py-4 text-white flex justify-between items-center">
+        <h2 class="font-bold text-base flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square text-amber-400"></i> Form Input Laporan Penggunaan Dana
+        </h2>
+        <span class="text-xs bg-slate-700 px-2.5 py-1 rounded text-slate-300">Isi data dengan lengkap</span>
+      </div>
+
+      <form id="lpdl-form" class="p-6 space-y-6" onsubmit="handleFormSubmit(event)">
+        <!-- DATA DIRI & SURAT -->
+        <div>
+          <h3 class="text-sm font-semibold text-slate-700 border-b pb-2 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-id-card text-blue-600"></i> Informasi Pegawai & Surat Tugas
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1">Nama Pegawai / Pelapor *</label>
+              <input type="text" id="nama" required placeholder="Contoh: Ahmad Subagja" class="w-full text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1">NIK / NIP *</label>
+              <input type="text" id="nik" required placeholder="Contoh: SKU-2025-089" class="w-full text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1">Jabatan *</label>
+              <input type="text" id="jabatan" required placeholder="Contoh: Field Geologist" class="w-full text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1">Departemen / Divisi *</label>
+              <select id="departemen" required class="w-full text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <option value="">-- Pilih Departemen --</option>
+                <option value="Eksplorasi & Geologi">Eksplorasi & Geologi</option>
+                <option value="Tambang / Mine Ops">Tambang / Mine Ops</option>
+                <option value="Survey & GIS">Survey & GIS</option>
+                <option value="HSE & K3">HSE & K3</option>
+                <option value="Logistik & Transport">Logistik & Transport</option>
+                <option value="HRD & GA">HRD & GA</option>
+                <option value="Keuangan & HR">Keuangan & HR</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1">No. Surat Tugas / SPD *</label>
+              <input type="text" id="noSurat" required placeholder="Contoh: 104/ST-SKU/X/2026" class="w-full text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1">Kota / Lokasi Tujuan *</label>
+              <input type="text" id="tujuan" required placeholder="Contoh: Pontianak / Ketapang" class="w-full text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1">Tanggal Mulai *</label>
+              <input type="date" id="tglMulai" required class="w-full text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1">Tanggal Selesai *</label>
+              <input type="date" id="tglSelesai" required class="w-full text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1">Maksud / Perihal Dinas *</label>
+              <input type="text" id="maksud" required placeholder="Contoh: Koordinasi sampel bauxite & izin pemetaan" class="w-full text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <!-- INPUT FOTO NOTA -->
+            <div class="md:col-span-3 bg-amber-50 p-3 rounded-lg border border-amber-200">
+              <label class="block text-xs font-semibold text-amber-900 mb-1">
+                <i class="fa-solid fa-paperclip mr-1"></i> Upload Foto / Scan Nota Bukti Pembayaran (Opsional)
+              </label>
+              <input type="file" id="fotoNota" accept="image/*" class="w-full text-xs px-2 py-1.5 border border-amber-300 rounded bg-white focus:outline-none">
+              <p class="text-[10px] text-amber-700 mt-1">Format yang didukung: JPG, PNG, JPEG. Berkas akan otomatis diunggah ke Google Drive.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- RINCIAN BIAYA PENGELUARAN -->
+        <div>
+          <div class="flex justify-between items-center border-b pb-2 mb-4">
+            <h3 class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+              <i class="fa-solid fa-calculator text-emerald-600"></i> Rincian Penggunaan Dana
+            </h3>
+            <button type="button" onclick="addCostRow()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 py-1.5 rounded-lg flex items-center gap-1 transition">
+              <i class="fa-solid fa-plus"></i> Tambah Item Biaya
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-100 text-xs text-slate-600 uppercase border-b border-slate-200">
+                  <th class="p-2 w-10 text-center">No</th>
+                  <th class="p-2 min-w-[140px]">Kategori Biaya</th>
+                  <th class="p-2 min-w-[200px]">Uraian Keterangan</th>
+                  <th class="p-2 w-28">Jumlah (Qty/Hari)</th>
+                  <th class="p-2 w-36">Satuan Biaya (Rp)</th>
+                  <th class="p-2 w-36 text-right">Subtotal (Rp)</th>
+                  <th class="p-2 w-12 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="cost-table-body">
+                <!-- Dynamic Cost Rows Generated via JS -->
+              </tbody>
+              <tfoot>
+                <tr class="bg-slate-50 font-bold border-t-2 border-slate-300">
+                  <td colspan="5" class="p-3 text-right text-slate-700">TOTAL PENGELUARAN:</td>
+                  <td class="p-3 text-right text-emerald-700 text-base" id="form-total-display">Rp 0</td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- SUBMIT BUTTONS -->
+        <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
+          <button type="button" onclick="resetForm()" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition">
+            <i class="fa-solid fa-rotate-left mr-1"></i> Reset
+          </button>
+          <button type="submit" id="btn-submit" class="px-6 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-sm font-semibold shadow-md transition flex items-center gap-2 disabled:opacity-50">
+            <i class="fa-solid fa-floppy-disk text-amber-400" id="btn-icon"></i> 
+            <span id="btn-text">Simpan & Kirim ke Google Sheet</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- TABLE HISTORI LAPORAN -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="p-5 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="font-bold text-base text-slate-800">Daftar Laporan Terdaftar</h2>
+          <p class="text-xs text-slate-500">Kelola, cetak, dan ekspor laporan penggunaan dana</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="https://docs.google.com/spreadsheets/d/1IA692b6sU8GrgXqyZYE4wRf11pXb_e7GMLgxQdh_cpo/edit" target="_blank" class="px-3 py-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-lg font-medium transition flex items-center gap-1">
+            <i class="fa-solid fa-table"></i> Lihat Spreadsheet
+          </a>
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+            <input type="text" id="search-input" onkeyup="renderTable()" placeholder="Cari nama / NIK / No. Surat..." class="pl-8 pr-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 w-64">
+          </div>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase">
+              <th class="p-3">No. Surat / Tanggal</th>
+              <th class="p-3">Nama / Jabatan</th>
+              <th class="p-3">Departemen</th>
+              <th class="p-3">Tujuan & Maksud</th>
+              <th class="p-3 text-right">Total Biaya</th>
+              <th class="p-3 text-center">Aksi / Cetak</th>
+            </tr>
+          </thead>
+          <tbody id="history-table-body" class="divide-y divide-slate-100">
+            <!-- Dynamic History Rows -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL PREVIEW PRINT (PAS 1 HALAMAN A4) -->
+  <div id="print-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto no-print">
+    <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+      <!-- Modal Header -->
+      <div class="bg-slate-800 px-6 py-3 text-white flex justify-between items-center flex-shrink-0">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-print text-amber-400"></i>
+          <h3 class="font-bold text-sm">Pratinjau Cetak Laporan (Dioptimalkan 1 Halaman A4)</h3>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white transition text-lg">&times;</button>
+      </div>
+
+      <!-- Action Bar -->
+      <div class="bg-slate-100 px-6 py-2 border-b border-slate-200 flex justify-between items-center flex-shrink-0 flex-wrap gap-2">
+        <span class="text-xs text-slate-500 font-medium">
+          <i class="fa-solid fa-circle-info text-blue-500 mr-1"></i> Format Kop Resmi PT SKU
+        </span>
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="downloadImageDirect()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-md font-semibold flex items-center gap-1 shadow-sm transition">
+            <i class="fa-solid fa-file-image"></i> Simpan Gambar (PNG)
+          </button>
+          <button onclick="downloadPDFDirect()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-1.5 rounded-md font-semibold flex items-center gap-1 shadow-sm transition">
+            <i class="fa-solid fa-file-pdf"></i> Unduh PDF (1 Halaman Direct)
+          </button>
+          <button onclick="triggerPrintBrowser()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded-md font-semibold flex items-center gap-1 shadow-sm transition">
+            <i class="fa-solid fa-print"></i> Cetak via Browser (A4)
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Print Document Preview) -->
+      <div class="p-6 overflow-y-auto flex-grow bg-slate-200 flex justify-center">
+        <div id="print-document" class="a4-document bg-white p-6 shadow-md border border-slate-300 rounded-sm">
+          <!-- Document Generated Dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRINT CONTAINER ISOLATION -->
+  <div id="print-area" class="hidden"></div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white text-xs px-4 py-3 rounded-lg shadow-xl z-50 flex items-center space-x-2 transition-all duration-300 transform translate-y-20 opacity-0 no-print">
+    <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+    <span id="toast-msg">Notifikasi</span>
+  </div>
+
+  <!-- JAVASCRIPT APP LOGIC -->
+  <script>
+    // URL Web App Google Apps Script API & Spreadsheet
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpQ6PJIg89N_MmyThUHa2uKLo7DmUPCl_tlwi3gQ2C9xy2BEQq8_No7LmhclxkkwiL/exec";
+    const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1IA692b6sU8GrgXqyZYE4wRf11pXb_e7GMLgxQdh_cpo/edit";
+
+    // Storage Key
+    const STORAGE_KEY = 'SKU_LPDL_DATA_V2';
+
+    // Application State
+    let reports = [];
+    let activeReportId = null;
+
+    // Initialize Application
+    document.addEventListener('DOMContentLoaded', () => {
+      loadReportsFromStorage();
+      initializeDefaultFormRows();
+      renderTable();
+      updateDashboardStats();
+    });
+
+    // Load Data & Clean Old Mock Records
+    function loadReportsFromStorage() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try {
+          reports = JSON.parse(stored);
+          reports = reports.filter(r => 
+            !r.nama.toLowerCase().includes('hendra wijaya') && 
+            !r.nama.toLowerCase().includes('anisa rahmawati')
+          );
+          saveReportsToStorage();
+        } catch (e) {
+          reports = [];
+        }
+      } else {
+        reports = [];
+      }
+    }
+
+    function saveReportsToStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+    }
+
+    // Default Dynamic Cost Table Rows
+    function initializeDefaultFormRows() {
+      const tbody = document.getElementById('cost-table-body');
+      tbody.innerHTML = '';
+      
+      const defaultCategories = ['Transportasi', 'Akomodasi / Penginapan', 'Uang Harian / Saku', 'Konsumsi / Makan'];
+      defaultCategories.forEach(cat => addCostRow(cat));
+    }
+
+    function addCostRow(category = '') {
+      const tbody = document.getElementById('cost-table-body');
+      const rowCount = tbody.children.length + 1;
+
+      const tr = document.createElement('tr');
+      tr.className = 'border-b border-slate-200 cost-row text-xs';
+      tr.innerHTML = `
+        <td class="p-2 text-center text-slate-400 row-number">${rowCount}</td>
+        <td class="p-2">
+          <select class="w-full p-1.5 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 cost-cat">
+            <option value="Transportasi" ${category === 'Transportasi' ? 'selected' : ''}>Transportasi</option>
+            <option value="Akomodasi / Penginapan" ${category === 'Akomodasi / Penginapan' ? 'selected' : ''}>Akomodasi / Penginapan</option>
+            <option value="Uang Harian / Saku" ${category === 'Uang Harian / Saku' ? 'selected' : ''}>Uang Harian / Saku</option>
+            <option value="Konsumsi / Makan" ${category === 'Konsumsi / Makan' ? 'selected' : ''}>Konsumsi / Makan</option>
+            <option value="Biaya Operasional / Lain" ${category === 'Biaya Operasional / Lain' ? 'selected' : ''}>Biaya Operasional / Lain</option>
+          </select>
+        </td>
+        <td class="p-2">
+          <input type="text" placeholder="Detail keterangan biaya..." class="w-full p-1.5 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 cost-desc">
+        </td>
+        <td class="p-2">
+          <input type="number" min="0" step="any" value="1" oninput="calculateTotal()" class="w-full p-1.5 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 cost-qty text-center">
+        </td>
+        <td class="p-2">
+          <input type="number" min="0" step="any" value="0" oninput="calculateTotal()" class="w-full p-1.5 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 cost-price">
+        </td>
+        <td class="p-2 text-right font-medium text-slate-700 cost-subtotal">Rp 0</td>
+        <td class="p-2 text-center">
+          <button type="button" onclick="removeCostRow(this)" class="text-rose-500 hover:text-rose-700 font-bold p-1">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+      calculateTotal();
+      updateRowNumbers();
+    }
+
+    function removeCostRow(btn) {
+      const tbody = document.getElementById('cost-table-body');
+      if (tbody.children.length > 1) {
+        btn.closest('tr').remove();
+        calculateTotal();
+        updateRowNumbers();
+      } else {
+        showToast('Minimal harus terdapat 1 baris rincian biaya', 'warning');
+      }
+    }
+
+    function updateRowNumbers() {
+      const rows = document.querySelectorAll('#cost-table-body tr');
+      rows.forEach((row, index) => {
+        row.querySelector('.row-number').textContent = index + 1;
+      });
+    }
+
+    // Calculate Total Without Rounding / Presisi Pecahan
+    function calculateTotal() {
+      let grandTotal = 0;
+      const rows = document.querySelectorAll('.cost-row');
+
+      rows.forEach(row => {
+        const qty = parseFloat(row.querySelector('.cost-qty').value) || 0;
+        const price = parseFloat(row.querySelector('.cost-price').value) || 0;
+        const subtotal = qty * price;
+        
+        row.querySelector('.cost-subtotal').textContent = formatRupiah(subtotal);
+        grandTotal += subtotal;
+      });
+
+      document.getElementById('form-total-display').textContent = formatRupiah(grandTotal);
+      return grandTotal;
+    }
+
+    // Helper Konversi Berkas Gambar ke Base64
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
+    }
+
+    // Form Submission ke Google Sheets API & LocalStorage
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+
+      const items = [];
+      const rows = document.querySelectorAll('.cost-row');
+      
+      rows.forEach(row => {
+        const qty = parseFloat(row.querySelector('.cost-qty').value) || 0;
+        const price = parseFloat(row.querySelector('.cost-price').value) || 0;
+        const desc = row.querySelector('.cost-desc').value.trim();
+
+        if (price > 0 && desc !== '') {
+          items.push({
+            kategori: row.querySelector('.cost-cat').value,
+            keterangan: desc,
+            qty: qty,
+            hargaSatuan: price,
+            subtotal: qty * price
+          });
+        }
+      });
+
+      if (items.length === 0) {
+        showToast('Mohon isi minimal 1 rincian pengeluaran biaya beserta alasannya!', 'error');
+        return;
+      }
+
+      const totalBiaya = items.reduce((sum, item) => sum + item.subtotal, 0);
+
+      // Konversi Gambar Nota jika diunggah
+      const fileInput = document.getElementById('fotoNota');
+      let fotoBase64 = null;
+      let fotoMimeType = null;
+
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        fotoMimeType = file.type;
+        try {
+          fotoBase64 = await fileToBase64(file);
+        } catch (err) {
+          console.error('Gagal membaca gambar:', err);
+        }
+      }
+
+      const newReport = {
+        id: 'LPD-' + Date.now(),
+        nama: document.getElementById('nama').value.trim(),
+        nik: document.getElementById('nik').value.trim(),
+        jabatan: document.getElementById('jabatan').value.trim(),
+        departemen: document.getElementById('departemen').value,
+        noSurat: document.getElementById('noSurat').value.trim(),
+        tujuan: document.getElementById('tujuan').value.trim(),
+        tglMulai: document.getElementById('tglMulai').value,
+        tglSelesai: document.getElementById('tglSelesai').value,
+        maksud: document.getElementById('maksud').value.trim(),
+        tglInput: new Date().toISOString().split('T')[0],
+        items: items,
+        totalBiaya: totalBiaya,
+        fotoNotaBase64: fotoBase64,
+        fotoNotaMimeType: fotoMimeType
+      };
+
+      // Set Loading UI State
+      const submitBtn = document.getElementById('btn-submit');
+      const btnIcon = document.getElementById('btn-icon');
+      const btnText = document.getElementById('btn-text');
+
+      submitBtn.disabled = true;
+      btnIcon.className = "fa-solid fa-spinner fa-spin text-amber-400";
+      btnText.textContent = "Mengirim ke Google Sheets...";
+      showToast('Mengirim data ke Google Sheets...', 'info');
+
+      try {
+        // Kirim data langsung ke Google Sheets API
+        await sendToGoogleSheet(newReport);
+
+        // Simpan ke Local storage & Update UI
+        reports.unshift(newReport);
+        saveReportsToStorage();
+        renderTable();
+        updateDashboardStats();
+        resetForm();
+
+        showToast('Laporan berhasil tersimpan di Google Sheets & Lokal!');
+      } catch (error) {
+        console.error('Error Google Sheets:', error);
+
+        // Fallback jika offline/gagal API
+        reports.unshift(newReport);
+        saveReportsToStorage();
+        renderTable();
+        updateDashboardStats();
+
+        showToast('Tersimpan di lokal. Gagal terhubung ke Google Sheets.', 'warning');
+      } finally {
+        // Reset UI State Button
+        submitBtn.disabled = false;
+        btnIcon.className = "fa-solid fa-floppy-disk text-amber-400";
+        btnText.textContent = "Simpan & Kirim ke Google Sheet";
+      }
+    }
+
+    // Fungsi Koneksi Google Apps Script (POST)
+    async function sendToGoogleSheet(payload) {
+      return fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+    }
+
+    function resetForm() {
+      document.getElementById('lpdl-form').reset();
+      initializeDefaultFormRows();
+    }
+
+    // Render Table History
+    function renderTable() {
+      const tbody = document.getElementById('history-table-body');
+      const searchTerm = document.getElementById('search-input').value.toLowerCase();
+
+      const filtered = reports.filter(r => 
+        r.nama.toLowerCase().includes(searchTerm) ||
+        r.nik.toLowerCase().includes(searchTerm) ||
+        r.noSurat.toLowerCase().includes(searchTerm) ||
+        r.tujuan.toLowerCase().includes(searchTerm)
+      );
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="p-8 text-center text-slate-400">
+              <i class="fa-solid fa-folder-open text-3xl mb-2 block"></i>
+              Belum ada data laporan penggunaan dana terdaftar.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(r => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="p-3">
+            <div class="font-bold text-slate-800">${escapeHtml(r.noSurat)}</div>
+            <div class="text-[11px] text-slate-500"><i class="fa-regular fa-calendar mr-1"></i>${formatDate(r.tglMulai)} s/d ${formatDate(r.tglSelesai)}</div>
+          </td>
+          <td class="p-3">
+            <div class="font-semibold text-slate-700">${escapeHtml(r.nama)}</div>
+            <div class="text-[11px] text-slate-500">${escapeHtml(r.nik)} - ${escapeHtml(r.jabatan)}</div>
+          </td>
+          <td class="p-3">
+            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-medium border border-slate-200">
+              ${escapeHtml(r.departemen)}
+            </span>
+          </td>
+          <td class="p-3">
+            <div class="font-medium text-slate-800">${escapeHtml(r.tujuan)}</div>
+            <div class="text-[11px] text-slate-500 truncate max-w-xs" title="${escapeHtml(r.maksud)}">${escapeHtml(r.maksud)}</div>
+          </td>
+          <td class="p-3 text-right font-bold text-emerald-700">
+            ${formatRupiah(r.totalBiaya)}
+          </td>
+          <td class="p-3 text-center">
+            <div class="flex items-center justify-center space-x-2">
+              <button onclick="openPrintModal('${r.id}')" title="Cetak / Pratinjau Laporan" class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white p-2 rounded-md transition text-xs">
+                <i class="fa-solid fa-print"></i> Cetak
+              </button>
+              <button onclick="deleteReport('${r.id}')" title="Hapus Laporan" class="bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white p-2 rounded-md transition text-xs">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function deleteReport(id) {
+      if (confirm('Apakah Anda yakin ingin menghapus laporan ini?')) {
+        showToast('Menghapus dari Google Sheets...', 'info');
+        
+        try {
+          await sendToGoogleSheet({ action: 'delete', id: id });
+        } catch (e) {
+          console.error('Gagal hapus di GS:', e);
+        }
+
+        reports = reports.filter(r => r.id !== id);
+        saveReportsToStorage();
+        renderTable();
+        updateDashboardStats();
+        showToast('Data laporan berhasil dihapus.', 'info');
+      }
+    }
+
+    function updateDashboardStats() {
+      document.getElementById('stat-total-laporan').textContent = reports.length;
+      const grandTotal = reports.reduce((sum, r) => sum + r.totalBiaya, 0);
+      document.getElementById('stat-total-dana').textContent = formatRupiah(grandTotal);
+    }
+
+    // Modal & Single-Page A4 Print Document Generation
+    function openPrintModal(id) {
+      const report = reports.find(r => r.id === id);
+      if (!report) return;
+
+      activeReportId = id;
+      const docContainer = document.getElementById('print-document');
+      
+      // Render Single Page A4 Layout Template
+      docContainer.innerHTML = `
+        <!-- KOP SURAT PERUSAHAAN -->
+        <div class="border-b-2 border-slate-900 pb-3 mb-4 flex items-center justify-between">
+          <div>
+            <h1 class="font-bold text-base tracking-wide text-slate-900">PT SANDAI KEMAKMURAN UTAMA</h1>
+            <p class="text-[10px] text-slate-600 font-medium">Bauxite Mining Operations & Exploration Site Labai</p>
+            <p class="text-[9px] text-slate-500">Kec. Sandai, Kab. Ketapang, Kalimantan Barat - Indonesia</p>
+          </div>
+          <div class="text-right">
+            <span class="border border-slate-800 text-slate-900 font-bold text-[10px] px-2 py-0.5 rounded uppercase tracking-wider block mb-1">
+              FORM LAPORAN DANA
+            </span>
+            <p class="text-[9px] text-slate-500">Tgl Cetak: ${formatDate(new Date().toISOString().split('T')[0])}</p>
+          </div>
+        </div>
+
+        <!-- JUDUL DOKUMEN -->
+        <div class="text-center my-3">
+          <h2 class="font-bold text-sm uppercase underline text-slate-900 tracking-wider">LAPORAN PENGGUNAAN DANA</h2>
+          <p class="text-[10px] text-slate-600 font-medium">Nomor Surat / SPD: ${escapeHtml(report.noSurat)}</p>
+        </div>
+
+        <!-- INFORMASI PEGAWAI & DINAS LUAR -->
+        <div class="grid grid-cols-2 gap-x-4 gap-y-1 my-3 bg-slate-50 p-2.5 rounded border border-slate-200 text-[10.5px]">
+          <div><span class="font-semibold text-slate-600 inline-block w-28">Nama Pelapor</span>: <strong>${escapeHtml(report.nama)}</strong></div>
+          <div><span class="font-semibold text-slate-600 inline-block w-28">Lokasi Tujuan</span>: ${escapeHtml(report.tujuan)}</div>
+          <div><span class="font-semibold text-slate-600 inline-block w-28">NIK / NIP</span>: ${escapeHtml(report.nik)}</div>
+          <div><span class="font-semibold text-slate-600 inline-block w-28">Tanggal Pelaksanaan</span>: ${formatDate(report.tglMulai)} s/d ${formatDate(report.tglSelesai)}</div>
+          <div><span class="font-semibold text-slate-600 inline-block w-28">Jabatan / Dept</span>: ${escapeHtml(report.jabatan)} (${escapeHtml(report.departemen)})</div>
+          <div><span class="font-semibold text-slate-600 inline-block w-28">Maksud Dinas</span>: ${escapeHtml(report.maksud)}</div>
+        </div>
+
+        <!-- TABEL RINCIAN PENGELUARAN BIAYA -->
+        <div class="my-3">
+          <h3 class="font-bold text-[11px] text-slate-800 mb-1">A. Rincian Penggunaan Anggaran</h3>
+          <table class="w-full text-[10px] border-collapse border border-slate-400">
+            <thead>
+              <tr class="bg-slate-200 text-slate-800 font-bold border-b border-slate-400 text-center">
+                <th class="border border-slate-400 p-1.5 w-8">NO</th>
+                <th class="border border-slate-400 p-1.5 w-36">KATEGORI BIAYA</th>
+                <th class="border border-slate-400 p-1.5">URAIAN / KETERANGAN PENGELUARAN</th>
+                <th class="border border-slate-400 p-1.5 w-14">QTY</th>
+                <th class="border border-slate-400 p-1.5 w-24">SATUAN (RP)</th>
+                <th class="border border-slate-400 p-1.5 w-28">SUBTOTAL (RP)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${report.items.map((item, idx) => `
+                <tr class="border-b border-slate-300">
+                  <td class="border border-slate-300 p-1.5 text-center">${idx + 1}</td>
+                  <td class="border border-slate-300 p-1.5 font-medium">${escapeHtml(item.kategori)}</td>
+                  <td class="border border-slate-300 p-1.5">${escapeHtml(item.keterangan)}</td>
+                  <td class="border border-slate-300 p-1.5 text-center">${item.qty}</td>
+                  <td class="border border-slate-300 p-1.5 text-right">${formatRupiah(item.hargaSatuan)}</td>
+                  <td class="border border-slate-300 p-1.5 text-right font-medium">${formatRupiah(item.subtotal)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+            <tfoot>
+              <tr class="bg-slate-100 font-bold border-t-2 border-slate-400 text-slate-900">
+                <td colspan="5" class="border border-slate-400 p-1.5 text-right uppercase">Total Pengeluaran Realisasi:</td>
+                <td class="border border-slate-400 p-1.5 text-right text-emerald-800">${formatRupiah(report.totalBiaya)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- TERBILANG & CATATAN -->
+        <div class="my-2 p-2 border border-slate-300 rounded bg-slate-50 text-[10px]">
+          <p><strong>Terbilang:</strong> <em># ${terbilang(report.totalBiaya)} Rupiah #</em></p>
+        </div>
+
+        <!-- KOLOM TANDA TANGAN PENGESAHAN (3 PIHAK) -->
+        <div class="mt-6 pt-2">
+          <p class="text-[10px] text-slate-600 mb-2 text-right">Site Labai, ${formatDate(report.tglInput)}</p>
+          <div class="grid grid-cols-3 gap-2 text-center text-[10px]">
+            <div>
+              <p class="font-semibold text-slate-700">Pelapor / Pegawai,</p>
+              <div class="h-16"></div>
+              <p class="font-bold underline text-slate-900">${escapeHtml(report.nama)}</p>
+              <p class="text-[9px] text-slate-500">${escapeHtml(report.jabatan)}</p>
+            </div>
+            <div>
+              <p class="font-semibold text-slate-700">Verifikator Keuangan,</p>
+              <div class="h-16"></div>
+              <p class="font-bold underline text-slate-900">( Finance & HR Site )</p>
+              <p class="text-[9px] text-slate-500">PT Sandai Kemakmuran Utama</p>
+            </div>
+            <div>
+              <p class="font-semibold text-slate-700">Mengetahui / Atasan,</p>
+              <div class="h-16"></div>
+              <p class="font-bold underline text-slate-900">Dananggoro Wicaryanto</p>
+              <p class="text-[9px] text-slate-500">Project Manager</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('print-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('print-modal').classList.add('hidden');
+      activeReportId = null;
+    }
+
+    // Direct Image Download (PNG) using html2canvas
+    function downloadImageDirect() {
+      const element = document.getElementById('print-document');
+      showToast('Memproses berkas Gambar PNG...', 'info');
+
+      html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      }).then(canvas => {
+        const image = canvas.toDataURL("image/png");
+        const link = document.createElement('a');
+        link.href = image;
+        link.download = `Laporan_Penggunaan_Dana_SKU_${activeReportId || 'Dokumen'}.png`;
+        link.click();
+        showToast('Gambar Laporan berhasil terunduh!');
+      }).catch(err => {
+        showToast('Gagal mengunduh Gambar: ' + err.message, 'error');
+      });
+    }
+
+    // Direct Single Page PDF Download using html2pdf.js
+    function downloadPDFDirect() {
+      const element = document.getElementById('print-document');
+      const opt = {
+        margin: [8, 10, 8, 10],
+        filename: `Laporan_Penggunaan_Dana_SKU_${activeReportId || 'Document'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: 'avoid-all' }
+      };
+
+      showToast('Memproses berkas PDF 1 Halaman...', 'info');
+      html2pdf().set(opt).from(element).save().then(() => {
+        showToast('Berkas PDF berhasil terunduh!');
+      }).catch(err => {
+        showToast('Gagal mengunduh PDF: ' + err.message, 'error');
+      });
+    }
+
+    // Browser Print Method
+    function triggerPrintBrowser() {
+      const printContent = document.getElementById('print-document').innerHTML;
+      const printArea = document.getElementById('print-area');
+      printArea.innerHTML = printContent;
+      window.print();
+    }
+
+    // Format Mata Uang Rupiah Presisi tanpa Pembulatan
+    function formatRupiah(number) {
+      if (isNaN(number) || number === null) return 'Rp 0';
+      const hasDecimals = number % 1 !== 0;
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: hasDecimals ? 2 : 0,
+        maximumFractionDigits: 20
+      }).format(number);
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return '-';
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString('id-ID', options);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+      });
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const msg = document.getElementById('toast-msg');
+      const icon = document.getElementById('toast-icon');
+
+      msg.textContent = message;
+      if (type === 'error') {
+        icon.className = 'fa-solid fa-circle-xmark text-rose-400';
+      } else if (type === 'warning') {
+        icon.className = 'fa-solid fa-triangle-exclamation text-amber-400';
+      } else if (type === 'info') {
+        icon.className = 'fa-solid fa-circle-info text-blue-400';
+      } else {
+        icon.className = 'fa-solid fa-circle-check text-emerald-400';
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+
+    // Terbilang Rupiah Helper
+    function terbilang(angka) {
+      const bil = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+      if (angka < 12) return bil[Math.floor(angka)];
+      if (angka < 20) return terbilang(Math.floor(angka - 10)) + " Belas";
+      if (angka < 100) return terbilang(Math.floor(angka / 10)) + " Puluh " + terbilang(Math.floor(angka % 10));
+      if (angka < 200) return "Seratus " + terbilang(Math.floor(angka - 100));
+      if (angka < 1000) return terbilang(Math.floor(angka / 100)) + " Ratus " + terbilang(Math.floor(angka % 100));
+      if (angka < 2000) return "Seribu " + terbilang(Math.floor(angka - 1000));
+      if (angka < 1000000) return terbilang(Math.floor(angka / 1000)) + " Ribu " + terbilang(Math.floor(angka % 1000));
+      if (angka < 1000000000) return terbilang(Math.floor(angka / 1000000)) + " Juta " + terbilang(Math.floor(angka % 1000000));
+      return Math.floor(angka).toString();
+    }
+  </script>
+</body>
+</html>
