@@ -410,10 +410,10 @@
           <input type="text" placeholder="Detail keterangan biaya..." class="w-full p-1.5 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 cost-desc">
         </td>
         <td class="p-2">
-          <input type="number" min="1" value="1" oninput="calculateTotal()" class="w-full p-1.5 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 cost-qty text-center">
+          <input type="number" min="0.01" step="any" value="1" oninput="calculateTotal()" class="w-full p-1.5 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 cost-qty text-center">
         </td>
         <td class="p-2">
-          <input type="number" min="0" value="0" step="5000" oninput="calculateTotal()" class="w-full p-1.5 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 cost-price">
+          <input type="number" min="0" value="0" step="any" oninput="calculateTotal()" class="w-full p-1.5 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 cost-price">
         </td>
         <td class="p-2 text-right font-medium text-slate-700 cost-subtotal">Rp 0</td>
         <td class="p-2 text-center">
@@ -842,7 +842,9 @@
 
     // Utility Functions
     function formatRupiah(number) {
-      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+      const parts = Number(number).toString().split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      return 'Rp ' + parts.join(',');
     }
 
     function formatDate(dateString) {
@@ -881,17 +883,34 @@
     }
 
     // Terbilang Rupiah Helper
-    function terbilang(angka) {
+    function terbilangUtama(angka) {
       const bil = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
       if (angka < 12) return bil[angka];
-      if (angka < 20) return terbilang(angka - 10) + " Belas";
-      if (angka < 100) return terbilang(Math.floor(angka / 10)) + " Puluh " + terbilang(angka % 10);
-      if (angka < 200) return "Seratus " + terbilang(angka - 100);
-      if (angka < 1000) return terbilang(Math.floor(angka / 100)) + " Ratus " + terbilang(angka % 100);
-      if (angka < 2000) return "Seribu " + terbilang(angka - 1000);
-      if (angka < 1000000) return terbilang(Math.floor(angka / 1000)) + " Ribu " + terbilang(angka % 1000);
-      if (angka < 1000000000) return terbilang(Math.floor(angka / 1000000)) + " Juta " + terbilang(angka % 1000000);
-      return Math.floor(angka).toString();
+      if (angka < 20) return terbilangUtama(angka - 10) + " Belas";
+      if (angka < 100) return terbilangUtama(Math.floor(angka / 10)) + " Puluh " + terbilangUtama(angka % 10);
+      if (angka < 200) return "Seratus " + terbilangUtama(angka - 100);
+      if (angka < 1000) return terbilangUtama(Math.floor(angka / 100)) + " Ratus " + terbilangUtama(angka % 100);
+      if (angka < 2000) return "Seribu " + terbilangUtama(angka - 1000);
+      if (angka < 1000000) return terbilangUtama(Math.floor(angka / 1000)) + " Ribu " + terbilangUtama(angka % 1000);
+      if (angka < 1000000000) return terbilangUtama(Math.floor(angka / 1000000)) + " Juta " + terbilangUtama(angka % 1000000);
+      if (angka < 1000000000000) return terbilangUtama(Math.floor(angka / 1000000000)) + " Miliar " + terbilangUtama(angka % 1000000000);
+      return angka.toString();
+    }
+
+    function terbilang(angka) {
+      if (angka === 0) return "Nol";
+      const parts = angka.toString().split('.');
+      const bulat = Math.floor(Math.abs(parseFloat(parts[0])));
+      let hasil = terbilangUtama(bulat);
+
+      if (parts.length > 1 && parseInt(parts[1]) > 0) {
+        const angkaEja = ["Nol", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan"];
+        hasil += " Koma";
+        for (let char of parts[1]) {
+          hasil += " " + angkaEja[parseInt(char)];
+        }
+      }
+      return hasil.trim();
     }
   </script>
 </body>
