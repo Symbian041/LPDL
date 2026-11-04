@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Laporan Penggunaan Dana - PT Sandai Kemakmuran Utama</title>
+  <title>LPDL - PT Sandai Kemakmuran Utama</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -70,7 +70,7 @@
         </div>
         <div>
           <h1 class="font-bold text-base leading-tight">PT SANDAI KEMAKMURAN UTAMA</h1>
-          <p class="text-xs text-slate-400">Sistem Laporan Penggunaan Dana</p>
+          <p class="text-xs text-slate-400">Sistem Laporan Penggunaan Dana Dinas Luar (LPDL)</p>
         </div>
       </div>
       <div class="flex items-center gap-3">
@@ -131,7 +131,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
       <div class="bg-slate-800 px-6 py-4 text-white flex justify-between items-center">
         <h2 class="font-bold text-base flex items-center gap-2">
-          <i class="fa-solid fa-pen-to-square text-amber-400"></i> Form Input Laporan Penggunaan Dana
+          <i class="fa-solid fa-pen-to-square text-amber-400"></i> Form Input Laporan Dinas Luar
         </h2>
         <span class="text-xs bg-slate-700 px-2.5 py-1 rounded text-slate-300">Isi data dengan lengkap</span>
       </div>
@@ -228,7 +228,7 @@
               </tbody>
               <tfoot>
                 <tr class="bg-slate-50 font-bold border-t-2 border-slate-300">
-                  <td colspan="5" class="p-3 text-right text-slate-700">TOTAL PENGELUARAN:</td>
+                  <td colspan="5" class="p-3 text-right text-slate-700">TOTAL PENGELUARAN DINAS LUAR:</td>
                   <td class="p-3 text-right text-emerald-700 text-base" id="form-total-display">Rp 0</td>
                   <td></td>
                 </tr>
@@ -255,7 +255,7 @@
       <div class="p-5 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 class="font-bold text-base text-slate-800">Daftar Laporan Terdaftar</h2>
-          <p class="text-xs text-slate-500">Kelola, cetak, dan ekspor laporan penggunaan dana</p>
+          <p class="text-xs text-slate-500">Kelola, cetak, dan ekspor laporan penggunaan dana dinas</p>
         </div>
         <div class="flex items-center gap-2">
           <a href="https://docs.google.com/spreadsheets/d/1IA692b6sU8GrgXqyZYE4wRf11pXb_e7GMLgxQdh_cpo/edit" target="_blank" class="px-3 py-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-lg font-medium transition flex items-center gap-1">
@@ -410,10 +410,10 @@
           <input type="text" placeholder="Detail keterangan biaya..." class="w-full p-1.5 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 cost-desc">
         </td>
         <td class="p-2">
-          <input type="number" min="0" step="any" value="1" oninput="calculateTotal()" class="w-full p-1.5 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 cost-qty text-center">
+          <input type="number" min="1" value="1" oninput="calculateTotal()" class="w-full p-1.5 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 cost-qty text-center">
         </td>
         <td class="p-2">
-          <input type="number" min="0" step="any" value="0" oninput="calculateTotal()" class="w-full p-1.5 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 cost-price">
+          <input type="number" min="0" value="0" step="5000" oninput="calculateTotal()" class="w-full p-1.5 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 cost-price">
         </td>
         <td class="p-2 text-right font-medium text-slate-700 cost-subtotal">Rp 0</td>
         <td class="p-2 text-center">
@@ -445,7 +445,6 @@
       });
     }
 
-    // Calculate Total Without Rounding / Presisi Pecahan
     function calculateTotal() {
       let grandTotal = 0;
       const rows = document.querySelectorAll('.cost-row');
@@ -519,7 +518,7 @@
       }
 
       const newReport = {
-        id: 'LPD-' + Date.now(),
+        id: 'LPDL-' + Date.now(),
         nama: document.getElementById('nama').value.trim(),
         nik: document.getElementById('nik').value.trim(),
         jabatan: document.getElementById('jabatan').value.trim(),
@@ -610,7 +609,7 @@
           <tr>
             <td colspan="6" class="p-8 text-center text-slate-400">
               <i class="fa-solid fa-folder-open text-3xl mb-2 block"></i>
-              Belum ada data laporan penggunaan dana terdaftar.
+              Belum ada data laporan dinas luar terdaftar.
             </td>
           </tr>
         `;
@@ -696,7 +695,7 @@
           </div>
           <div class="text-right">
             <span class="border border-slate-800 text-slate-900 font-bold text-[10px] px-2 py-0.5 rounded uppercase tracking-wider block mb-1">
-              FORM LAPORAN DANA
+              FORM LPDL
             </span>
             <p class="text-[9px] text-slate-500">Tgl Cetak: ${formatDate(new Date().toISOString().split('T')[0])}</p>
           </div>
@@ -704,7 +703,7 @@
 
         <!-- JUDUL DOKUMEN -->
         <div class="text-center my-3">
-          <h2 class="font-bold text-sm uppercase underline text-slate-900 tracking-wider">LAPORAN PENGGUNAAN DANA</h2>
+          <h2 class="font-bold text-sm uppercase underline text-slate-900 tracking-wider">LAPORAN PENGGUNAAN DANA DINAS LUAR</h2>
           <p class="text-[10px] text-slate-600 font-medium">Nomor Surat / SPD: ${escapeHtml(report.noSurat)}</p>
         </div>
 
@@ -805,9 +804,9 @@
         const image = canvas.toDataURL("image/png");
         const link = document.createElement('a');
         link.href = image;
-        link.download = `Laporan_Penggunaan_Dana_SKU_${activeReportId || 'Dokumen'}.png`;
+        link.download = `LPDL_SKU_${activeReportId || 'Dokumen'}.png`;
         link.click();
-        showToast('Gambar Laporan berhasil terunduh!');
+        showToast('Gambar LPDL berhasil terunduh!');
       }).catch(err => {
         showToast('Gagal mengunduh Gambar: ' + err.message, 'error');
       });
@@ -818,7 +817,7 @@
       const element = document.getElementById('print-document');
       const opt = {
         margin: [8, 10, 8, 10],
-        filename: `Laporan_Penggunaan_Dana_SKU_${activeReportId || 'Document'}.pdf`,
+        filename: `LPDL_SKU_${activeReportId || 'Document'}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, logging: false },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
@@ -841,16 +840,9 @@
       window.print();
     }
 
-    // Format Mata Uang Rupiah Presisi tanpa Pembulatan
+    // Utility Functions
     function formatRupiah(number) {
-      if (isNaN(number) || number === null) return 'Rp 0';
-      const hasDecimals = number % 1 !== 0;
-      return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: hasDecimals ? 2 : 0,
-        maximumFractionDigits: 20
-      }).format(number);
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
     }
 
     function formatDate(dateString) {
@@ -891,14 +883,14 @@
     // Terbilang Rupiah Helper
     function terbilang(angka) {
       const bil = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
-      if (angka < 12) return bil[Math.floor(angka)];
-      if (angka < 20) return terbilang(Math.floor(angka - 10)) + " Belas";
-      if (angka < 100) return terbilang(Math.floor(angka / 10)) + " Puluh " + terbilang(Math.floor(angka % 10));
-      if (angka < 200) return "Seratus " + terbilang(Math.floor(angka - 100));
-      if (angka < 1000) return terbilang(Math.floor(angka / 100)) + " Ratus " + terbilang(Math.floor(angka % 100));
-      if (angka < 2000) return "Seribu " + terbilang(Math.floor(angka - 1000));
-      if (angka < 1000000) return terbilang(Math.floor(angka / 1000)) + " Ribu " + terbilang(Math.floor(angka % 1000));
-      if (angka < 1000000000) return terbilang(Math.floor(angka / 1000000)) + " Juta " + terbilang(Math.floor(angka % 1000000));
+      if (angka < 12) return bil[angka];
+      if (angka < 20) return terbilang(angka - 10) + " Belas";
+      if (angka < 100) return terbilang(Math.floor(angka / 10)) + " Puluh " + terbilang(angka % 10);
+      if (angka < 200) return "Seratus " + terbilang(angka - 100);
+      if (angka < 1000) return terbilang(Math.floor(angka / 100)) + " Ratus " + terbilang(angka % 100);
+      if (angka < 2000) return "Seribu " + terbilang(angka - 1000);
+      if (angka < 1000000) return terbilang(Math.floor(angka / 1000)) + " Ribu " + terbilang(angka % 1000);
+      if (angka < 1000000000) return terbilang(Math.floor(angka / 1000000)) + " Juta " + terbilang(angka % 1000000);
       return Math.floor(angka).toString();
     }
   </script>
